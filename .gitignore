@@ -1,9 +1,9 @@
 # Created by .ignore support plugin (hsz.mobi)
 
 ### Sensitive information
-/user.cfg
-/my.cnf
-*my.cnf
+/data/user.cfg
+/data/my.cnf
+data/my.cnf
 ### VisualStudioCode template
 .vscode/*
 !.vscode/settings.json

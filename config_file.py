@@ -4,7 +4,7 @@ import logging.handlers
 
 
 # Config consts
-CFG_FL_NAME = 'user.cfg'
+CFG_FL_NAME = 'data/user.cfg'
 USER_CFG_SECTION = 'binance_user_config'
 
 
@@ -19,7 +19,7 @@ config.read(CFG_FL_NAME)
 logger = logging.getLogger('crypto_trader_logger')
 logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh = logging.FileHandler('crypto_trading.log')
+fh = logging.FileHandler('data/crypto_trading.log')
 fh.setLevel(logging.DEBUG)
 fh.setFormatter(formatter)
 logger.addHandler(fh)
@@ -33,8 +33,7 @@ logger.addHandler(ch)
 # get django secret key from user.cfg
 DJANGO_SECRET_KEY = config.get(USER_CFG_SECTION, 'django_secret_key')
 
-supported_coin_list = []
-
 # Get supported coin list from supported_coin_list file
-with open('supported_coin_list') as f:
+with open('data/supported_coin_list') as f:
     supported_coin_list = f.read().upper().splitlines()
+
