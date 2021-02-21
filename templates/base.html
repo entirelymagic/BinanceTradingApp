@@ -5,7 +5,12 @@
   <title>Base BinanceTradingApp</title>
 </head>
 <body>
-  <div>Basic App</div>
 
+  {% include "navbar.html" %}
+
+  {% block content %}
+  {% endblock %}
+
+  {% include "scripts.html" %}
 </body>
 </html>

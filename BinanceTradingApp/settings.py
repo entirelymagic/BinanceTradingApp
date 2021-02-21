@@ -80,7 +80,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
-            'read_default_file': 'my.cnf',
+            'read_default_file': 'data/my.cnf',
         },
     }
 }
@@ -123,3 +123,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+# set static files base dir
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
