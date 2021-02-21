@@ -33,3 +33,8 @@ logger.addHandler(ch)
 # get django secret key from user.cfg
 DJANGO_SECRET_KEY = config.get(USER_CFG_SECTION, 'django_secret_key')
 
+supported_coin_list = []
+
+# Get supported coin list from supported_coin_list file
+with open('supported_coin_list') as f:
+    supported_coin_list = f.read().upper().splitlines()
