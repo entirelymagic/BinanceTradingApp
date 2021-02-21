@@ -81,7 +81,12 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'OPTIONS': {
             'read_default_file': 'data/my.cnf',
+
         },
+
+        'TEST': {
+            'NAME': "test_database",
+        }
     }
 }
 
@@ -128,3 +133,9 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+AUTH_USER_MODEL = "binance_trading_bot.user"  # tell change we have custom user model (name of the app.User)
+
+LOGIN_REDIRECT_URL = ''
+LOGOUT_REDIRECT_URL = ''
+LOGIN_URL = '/login'  # specify the LOGIN URL in order to be redirected by LoginRequiredMixin

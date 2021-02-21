@@ -18,7 +18,7 @@ class BinanceAccountClient(BClient):
         super().__init__(api_key, api_secret_key, requests_params=None, tld='com')
         self.api_key = api_key
         self.api_secret_key = api_secret_key
-        # self.__client = BClient(api_key, api_secret_key)
+
 
     @staticmethod
     def __first(iterable, condition=lambda x: True):
