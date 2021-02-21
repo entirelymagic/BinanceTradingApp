@@ -32,3 +32,4 @@ logger.addHandler(ch)
 
 # get django secret key from user.cfg
 DJANGO_SECRET_KEY = config.get(USER_CFG_SECTION, 'django_secret_key')
+
