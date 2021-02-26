@@ -5,8 +5,8 @@ from BinanceTradingApp.trading_client import BinanceAccountClient
 from config_file import config, USER_CFG_SECTION
 
 
-class TestClientAPI(UnitTestCase):
-    def test_API_connection(self):
+class ClientAPITest(UnitTestCase):
+    def test_API_client_connection(self):
         api_key = config.get(USER_CFG_SECTION, 'api_key')
         api_secret_key = config.get(USER_CFG_SECTION, 'api_secret_key')
         binance_acc = BinanceAccountClient(api_key, api_secret_key)
@@ -14,11 +14,11 @@ class TestClientAPI(UnitTestCase):
         self.assertEqual(all_tickers[0]['symbol'], 'ETHBTC')
 
 
-class BaseTestClass(TestCase):
+class BaseClassTest(TestCase):
 
     def test_landing_view(self):
-        """Test landing view"""
-        page_name = "landing_page"
+        """tests landing view"""
+        page_name = "landing-page"
         file_name = "landing.html"
 
         response = self.client.get(reverse(page_name))

@@ -4,6 +4,8 @@
 /data/user.cfg
 /data/my.cnf
 data/my.cnf
+*noob.py
+*exercises.py
 ### VisualStudioCode template
 .vscode/*
 !.vscode/settings.json
@@ -32,7 +34,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+lib/ssssssssssss
 lib64/
 parts/
 sdist/
@@ -54,7 +56,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit tests / coverage reports
 htmlcov/
 .tox/
 .nox/
