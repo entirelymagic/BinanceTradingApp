@@ -1,8 +1,5 @@
 import configparser
 import os
-import json
-from pprint import pprint
-import time
 from BinanceTradingApp.trading_client import BinanceAccountClient
 
 # Config consts
@@ -29,18 +26,15 @@ TELEGRAM_TOKEN = config.get(USER_CFG_SECTION, 'botToken')
 BRIDGE = config.get(USER_CFG_SECTION, 'bridge')
 
 
-def main():
+def set_acc():
     api_key = config.get(USER_CFG_SECTION, 'api_key')
     api_secret_key = config.get(USER_CFG_SECTION, 'api_secret_key')
     acc = BinanceAccountClient(api_key, api_secret_key)
-    all_tickers = acc.get_all_tickers()
+    return acc
 
-    for item in all_tickers:
-        if item['symbol'] == 'IOTAUSDT':
-            balance = float(acc.get_currency_balance('IOTA'))
-            print(item['price'])
-            print(float(balance) * float(item['price']))
+
+acc = set_acc()
 
 
 if __name__ == "__main__":
-    main()
+    pass

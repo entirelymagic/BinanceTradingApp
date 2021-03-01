@@ -1,3 +1,18 @@
+{% extends 'base_page.html'%}
+
 {% block content %}
 
+  <div> Total Iota price to USDT: {{ landing.iota_value_in_USDT }}</div>
+  <div> Current Iota price: {{ landing.IOTAUSDT_last_price }}</div>
+  <div>
+    <br>
+  {% for key, value in  landing.IOTAUSDT_details.items %}
+   <div>class{{ key }} : {{ value }}</div>
+  {% endfor %}
+  </div>
+  <br>
+  {% for h_trade in landing.IOTAUSDT_history_trades %}
+    <div>{{ h_trade }}</div>
+  {% endfor %}
+  
 {% endblock %}

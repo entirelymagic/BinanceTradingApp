@@ -5,7 +5,7 @@
 /data/my.cnf
 data/my.cnf
 *noob.py
-*exercises.py
+
 ### VisualStudioCode template
 .vscode/*
 !.vscode/settings.json
@@ -253,3 +253,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 
+/data_manipulation.py

@@ -19,7 +19,6 @@ class BinanceAccountClient(BClient):
         self.api_key = api_key
         self.api_secret_key = api_secret_key
 
-
     @staticmethod
     def __first(iterable, condition=lambda x: True):
         try:
