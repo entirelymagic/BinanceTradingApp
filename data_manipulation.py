@@ -2,9 +2,9 @@ import datetime
 import talib
 import websocket
 import json
-
+import asyncio
+import threading
 import datetime as dt
-
 from pprint import pprint
 from config_file import acc
 from cryptowatch_history import CandleHistoryFromCryptowatch
@@ -63,6 +63,7 @@ def on_message(ws, message):
 
 
 # Create websocket app to take actions
+
 ws = websocket.WebSocketApp(SOCKET, on_open=on_open, on_close=on_close, on_message=on_message)
 
 

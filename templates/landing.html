@@ -4,15 +4,26 @@
 
   <div> Total Iota price to USDT: {{ landing.iota_value_in_USDT }}</div>
   <div> Current Iota price: {{ landing.IOTAUSDT_last_price }}</div>
-  <div>
-    <br>
-  {% for key, value in  landing.IOTAUSDT_details.items %}
-   <div>class{{ key }} : {{ value }}</div>
-  {% endfor %}
-  </div>
+
   <br>
-  {% for h_trade in landing.IOTAUSDT_history_trades %}
-    <div>{{ h_trade }}</div>
-  {% endfor %}
-  
+    <div class="d-inline">Live Current Iota Price: </div><div class="d-inline" id="this_event"></div>
+
+
+    <div>
+    <br>
+      {% for key, value in  landing.IOTAUSDT_details.items %}
+       <div>class{{ key }} : {{ value }}</div>
+      {% endfor %}
+    </div>
+  <script>
+      letters = "{{ landing.socket_url|safe }}";
+
+      socket = new WebSocket(letters);
+
+      socket.onmessage = function(event){
+          let ws_data = JSON.parse(event.data)
+          document.querySelector('#this_event').innerText = ws_data.k.c
+      }
+      
+  </script>
 {% endblock %}
