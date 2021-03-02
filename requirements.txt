@@ -1,11 +1,18 @@
+amqp==5.0.5
 asgiref==3.3.1
 attrs==20.3.0
 autobahn==21.2.1
 Automat==20.2.0
+billiard==3.6.3.0
+celery==5.0.5
 certifi==2020.12.5
 cffi==1.14.5
 channels==3.0.3
 chardet==4.0.0
+click==7.1.2
+click-didyoumean==0.0.3
+click-plugins==1.1.1
+click-repl==0.1.6
 constantly==15.1.0
 cryptography==3.4.6
 daphne==3.0.1
@@ -14,9 +21,11 @@ Django==3.1.7
 hyperlink==21.0.0
 idna==2.10
 incremental==17.5.0
+kombu==5.0.2
 mysql-connector-python==8.0.23
 mysqlclient==2.0.3
 numpy==1.20.1
+prompt-toolkit==3.0.16
 protobuf==3.15.1
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
@@ -26,6 +35,7 @@ pyOpenSSL==20.0.1
 python-binance==0.7.9
 python-dateutil==2.8.1
 pytz==2021.1
+redis==3.5.3
 regex==2020.11.13
 requests==2.25.1
 service-identity==18.1.0
@@ -37,5 +47,7 @@ txaio==21.2.1
 tzlocal==2.1
 ujson==4.0.2
 urllib3==1.26.3
+vine==5.0.0
+wcwidth==0.2.5
 websocket-client==0.57.0
 zope.interface==5.2.0

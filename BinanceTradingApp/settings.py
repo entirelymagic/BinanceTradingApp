@@ -74,7 +74,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'BinanceTradingApp.wsgi.application'
-
+# Channels
+ASGI_APPLICATION = 'BinanceTradingApp.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases

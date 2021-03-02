@@ -9,8 +9,18 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/asgi/
 
 import os
 
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
+import binance_trading_bot.routing
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'BinanceTradingApp.settings')
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "mysite.settings")
 
-application = get_asgi_application()
+application = ProtocolTypeRouter({
+  "http": get_asgi_application(),
+  "websocket": AuthMiddlewareStack(
+        URLRouter(
+            binance_trading_bot.routing.websocket_urlpatterns
+        )
+    ),
+})
