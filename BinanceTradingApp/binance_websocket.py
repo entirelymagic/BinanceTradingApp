@@ -1,13 +1,8 @@
-import datetime
-import talib
 import websocket
 import json
-import asyncio
-import threading
-import datetime as dt
-from pprint import pprint
-from config_file import acc
-from cryptowatch_history import CandleHistoryFromCryptowatch
+from BinanceTradingApp.cryptowatch_history import CandleHistoryFromCryptowatch
+
+from asgiref.sync import sync_to_async
 
 SOCKET = "wss://stream.binance.com:9443/ws/iotausdt@kline_1m"
 
@@ -37,6 +32,8 @@ cripto_history = CandleHistoryFromCryptowatch(TRADE_SYMBOL, 900)
 
 closes = cripto_history.closed
 
+last_message_from_socket = []
+
 
 def on_open(ws):
     print("Opened")
@@ -57,24 +54,12 @@ def on_message(ws, message):
     is_candle_closed = candle['x']
     close = candle['c']
     print(close)
+    last_message_from_socket.append(close)
     if is_candle_closed:
         closes.append(float(close))
-        print(closes)
+        print('Last from closes: ' + str(closes[-1]))
 
 
 # Create websocket app to take actions
-
 ws = websocket.WebSocketApp(SOCKET, on_open=on_open, on_close=on_close, on_message=on_message)
-
-
-def get_iota_value(acc):
-    for item in acc.get_all_tickers():
-        if item['symbol'] == 'IOTAUSDT':
-            balance = float(acc.get_currency_balance('IOTA'))
-            balance_in_USDT = (float(balance) * float(item['price']))
-            return "{:.2f}".format(balance_in_USDT)
-
-
-def to_date(timestamp):
-    timestamp = datetime.datetime.fromtimestamp(timestamp)
-    return timestamp.strftime('%Y-%m-%d %H:%M:%S')
+get_closes = sync_to_async(ws.run_forever, thread_sensitive=True)

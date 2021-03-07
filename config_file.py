@@ -2,6 +2,7 @@ import configparser
 import os
 from BinanceTradingApp.trading_client import BinanceAccountClient
 
+
 # Config consts
 CFG_FL_NAME = 'data/user.cfg'
 USER_CFG_SECTION = 'binance_user_config'
@@ -26,14 +27,16 @@ TELEGRAM_TOKEN = config.get(USER_CFG_SECTION, 'botToken')
 BRIDGE = config.get(USER_CFG_SECTION, 'bridge')
 
 
-def set_acc():
+def set_acc() -> 'BinanceAccountClient':
+    """Using the API key and secret key configure the a binance account object."""
     api_key = config.get(USER_CFG_SECTION, 'api_key')
     api_secret_key = config.get(USER_CFG_SECTION, 'api_secret_key')
-    acc = BinanceAccountClient(api_key, api_secret_key)
-    return acc
+    account = BinanceAccountClient(api_key, api_secret_key)
+    return account
 
 
-acc = set_acc()
+# instantiate the binance account
+binance_account = set_acc()
 
 
 if __name__ == "__main__":

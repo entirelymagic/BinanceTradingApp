@@ -1,19 +1,8 @@
 from binance.client import Client as BClient
-from binance.exceptions import BinanceAPIException
-from time import time
-
-
-def performance_check(func):
-    def wrapper(*args, **kwargs):
-        t1 = time()
-        value = func(*args, **kwargs)
-        t2 = time()
-        print(f'Function "{func.__name__}" took {t2 - t1} seconds to execute.')
-        return value
-    return wrapper
 
 
 class BinanceAccountClient(BClient):
+    """Using Client Binance class perform extended actions."""
     def __init__(self, api_key, api_secret_key):
         super().__init__(api_key, api_secret_key, requests_params=None, tld='com')
         self.api_key = api_key
@@ -35,7 +24,6 @@ class BinanceAccountClient(BClient):
         """
         return self.get_all_tickers()
 
-    @performance_check
     def get_market_ticker_price(self, ticker_symbol):
         """
         Get ticker price of a specific coin
@@ -47,7 +35,6 @@ class BinanceAccountClient(BClient):
                 return float(ticker[u'price'])
         return None
 
-    @performance_check
     def get_market_ticker_price_from_list(self, all_tickers, ticker_symbol):
         """
         Get ticker price of a specific coin

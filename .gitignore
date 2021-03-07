@@ -253,4 +253,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 
-/data_manipulation.py
+/BinanceTradingApp/data_manipulation.py

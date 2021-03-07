@@ -1,11 +1,9 @@
-import asyncio
-from django.shortcuts import render
 from django.views import generic
 from django.shortcuts import reverse
-from config_file import acc
-from data_manipulation import get_iota_value, SOCKET
+from config_file import binance_account as acc
+from BinanceTradingApp.data_manipulation import get_iota_value, SOCKET, closes, last_message_from_socket
 from .forms import CustomUserCreationForm
-from cryptowatch_history import CandleHistoryFromCryptowatch
+from BinanceTradingApp.cryptowatch_history import CandleHistoryFromCryptowatch
 
 
 class LandingPageView(generic.ListView):
@@ -22,6 +20,8 @@ class LandingPageView(generic.ListView):
             'USDT_balance': acc.get_currency_balance(currency_symbol="USDT"),
             'crypto_history': CandleHistoryFromCryptowatch('IOTAUSDT', 900).closed,
             'socket_url': SOCKET,
+            'closes': closes[-1],
+            'last_message_from_socket': last_message_from_socket
         }
         return queryset
 

@@ -4,21 +4,32 @@
 
   <div> Total Iota price to USDT: {{ landing.iota_value_in_USDT }}</div>
   <div> Iota price on page load: {{ landing.IOTAUSDT_last_price }}</div>
+  <div> Closes price on load: {{ landing.last_message_from_socket }}</div>
+  <div id="last_closes"> </div>
 
   <br>
     <div class="d-inline">Live Current Iota Price from JS Socket: </div><div class="d-inline" id="this_event">{{ landing.IOTAUSDT_last_price }}</div>
 
 
   <script>
-      letters = "{{ landing.socket_url|safe }}";
+    let letters = "{{ landing.socket_url|safe }}";
 
-      socket = new WebSocket(letters);
+    socket = new WebSocket(letters);
 
-      let live_iot_price =  document.querySelector('#this_event')
-      socket.onmessage = function(event){
-          let ws_data = JSON.parse(event.data)
-          live_iot_price.innerText = ws_data.k.c
-      }
-      
+    let live_iot_price =  document.querySelector('#this_event')
+    socket.onmessage = function(event){
+      let ws_data = JSON.parse(event.data)
+      live_iot_price.innerText = ws_data.k.c
+    }
+
+
+    function yourFunction(){
+      let closes = "{{ landing.closes }}"
+      let live_closes = document.querySelector('#last_closes')
+      live_closes.innerText = 'Last Price from closes: ' + closes
+    setTimeout(yourFunction, 5000);
+    }
+
+yourFunction();
   </script>
 {% endblock %}
