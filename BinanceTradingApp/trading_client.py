@@ -24,7 +24,7 @@ class BinanceAccountClient(BClient):
         """
         return self.get_all_tickers()
 
-    def get_market_ticker_price(self, ticker_symbol):
+    def get_market_ticker_price(self, ticker_symbol) -> None or float:
         """
         Get ticker price of a specific coin
         @:param ticker_symbol
@@ -35,7 +35,7 @@ class BinanceAccountClient(BClient):
                 return float(ticker[u'price'])
         return None
 
-    def get_market_ticker_price_from_list(self, all_tickers, ticker_symbol):
+    def get_market_ticker_price_from_list(self, all_tickers, ticker_symbol) -> float:
         """
         Get ticker price of a specific coin
         """

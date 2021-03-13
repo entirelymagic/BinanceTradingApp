@@ -26,6 +26,7 @@ class CandleHistoryFromCryptowatch:
     """
 
     def __init__(self, pair, period=900):
+        super().__init__()
         self.pair = pair
         self.period = period
         self.candle_data_list = []

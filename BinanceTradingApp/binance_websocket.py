@@ -1,5 +1,7 @@
 import websocket
 import json
+import threading
+
 from BinanceTradingApp.cryptowatch_history import CandleHistoryFromCryptowatch
 
 from asgiref.sync import sync_to_async
@@ -61,5 +63,22 @@ def on_message(ws, message):
 
 
 # Create websocket app to take actions
-ws = websocket.WebSocketApp(SOCKET, on_open=on_open, on_close=on_close, on_message=on_message)
-get_closes = sync_to_async(ws.run_forever, thread_sensitive=True)
+
+
+class StartBinanceWebSocket(threading.Thread):
+    def __init__(self):
+        super().__init__()
+
+    def run(self):
+        ws = websocket.WebSocketApp(SOCKET, on_open=on_open, on_close=on_close, on_message=on_message)
+        ws.run_forever()
+
+
+def run__StartBinanceWebSocket():
+    b_socket = StartBinanceWebSocket()
+    b_socket.daemon = True
+    b_socket.start()
+
+
+#run
+run__StartBinanceWebSocket()

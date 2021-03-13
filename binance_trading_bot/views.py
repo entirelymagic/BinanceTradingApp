@@ -1,9 +1,12 @@
 from django.views import generic
 from django.shortcuts import reverse
-from config_file import binance_account as acc
-from BinanceTradingApp.data_manipulation import get_iota_value, SOCKET, closes, last_message_from_socket
 from .forms import CustomUserCreationForm
+
+from config_file import binance_account as acc
+
+from BinanceTradingApp.data_manipulation import get_iota_value
 from BinanceTradingApp.cryptowatch_history import CandleHistoryFromCryptowatch
+from BinanceTradingApp.binance_websocket import SOCKET, closes, last_message_from_socket
 
 
 class LandingPageView(generic.ListView):

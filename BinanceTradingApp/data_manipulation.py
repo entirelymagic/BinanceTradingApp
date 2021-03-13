@@ -1,5 +1,5 @@
 import datetime
-import talib
+
 from time import time
 
 
