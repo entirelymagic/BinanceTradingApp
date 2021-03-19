@@ -51,3 +51,4 @@ vine==5.0.0
 wcwidth==0.2.5
 websocket-client==0.57.0
 zope.interface==5.2.0
+pandas~=1.2.3

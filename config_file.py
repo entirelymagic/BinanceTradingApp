@@ -1,7 +1,17 @@
 import configparser
 import os
-from BinanceTradingApp.trading_client import BinanceAccountClient
+import time
+import sys
+import logging
+import datetime
 
+from pprint import pprint
+from playsound import playsound
+from static.sounds import *
+
+from BinanceTradingApp.trading_client import BinanceAccountClient
+from get_stochasticRSI import ThreadedCryptoStats
+from decizion_maker import CalculateCryptoScore, start_monitor_threads, CryptoMonitorThread
 
 # Config consts
 CFG_FL_NAME = 'data/user.cfg'
@@ -26,6 +36,15 @@ TELEGRAM_CHAT_ID = config.get(USER_CFG_SECTION, 'botChatID')
 TELEGRAM_TOKEN = config.get(USER_CFG_SECTION, 'botToken')
 BRIDGE = config.get(USER_CFG_SECTION, 'bridge')
 
+# Logger setup
+logger = logging.getLogger('crypto_trader_logger')
+logger.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh = logging.FileHandler('crypto_trading.log')
+fh.setLevel(logging.DEBUG)
+fh.setFormatter(formatter)
+logger.addHandler(fh)
+
 
 def set_acc() -> 'BinanceAccountClient':
     """Using the API key and secret key configure the a binance account object."""
@@ -35,9 +54,94 @@ def set_acc() -> 'BinanceAccountClient':
     return account
 
 
-# instantiate the binance account
+crypto_winnings = {
+    '12h': {
+        'winnings': 0,
+        'ALERT_CHANGE': '',
+        'change_on_price': '',
+        'positions': 0,
+    },
+    '1h': {
+        'winnings': 0,
+        'ALERT_CHANGE': '',
+        'change_on_price': 0,
+        'positions': 0,
+    },
+    '15m': {
+        'winnings': 0,
+        'ALERT_CHANGE': '',
+        'change_on_price': 0,
+        'positions': 0,
+    },
+    '5m': {
+        'winnings': 0,
+        'ALERT_CHANGE': '',
+        'change_on_price': 0,
+        'positions': 0,
+    },
+}
+
 binance_account = set_acc()
 
+tickers = binance_account.get_all_tickers()
 
-if __name__ == "__main__":
-    pass
+
+# start_monitor_threads(binance_account, ThreadedCryptoStats, "IOTAUSDT")
+
+
+coins = ['OMG', 'FTM', 'NEAR', 'XLM', 'COTI', 'IOTA', 'RVN', 'HOT', 'CHZ', 'BTC', 'DEGO', 'VET', 'ADA', 'BNB', 'ONE']
+
+
+def run_multiple_checks(coins: list = coins):
+    intervals_to_check = ['1m']
+    for item in coins:
+        for i in intervals_to_check:
+            detail = CryptoMonitorThread(binance_account, symbol=item + 'USDT', KLINE_INTERVAL=i)
+            detail.return_score()
+            detail.return_score()
+            del detail
+
+
+def run_single_values(
+        single_coin_check: str,
+        buy_signal: bool = None,
+        sell_signal: bool = None,
+        value_on_open_trade: float = 0,
+        profits: float = 0
+        ) -> None:
+
+    # shot statistics on start for 1 hour then Close
+    single_coin = CryptoMonitorThread(binance_account, symbol=single_coin_check + 'USDT', KLINE_INTERVAL='1h')
+    # set this on if trade opened already
+    single_coin.profits = profits
+    single_coin.buy_trade = buy_signal
+    single_coin.sell_trade = sell_signal
+    single_coin.value_on_open_trade = value_on_open_trade
+    single_coin.return_score()
+    single_coin.return_score()
+    del single_coin
+
+    # shot statistics on start for 1m in a loop
+    single_coin = CryptoMonitorThread(binance_account, symbol=single_coin_check + 'USDT', KLINE_INTERVAL='1m')
+
+    # set this on if trade opened already
+    single_coin.profits = profits
+    single_coin.buy_signal = buy_signal
+    single_coin.sell_signal = sell_signal
+    single_coin.value_on_open_trade = value_on_open_trade
+    # Check continuously
+    while True:
+        single_coin.return_score()
+
+
+# run_single_values(
+#     single_coin_check='DEGO',
+#     # buy_signal=False,
+#     # sell_signal=True,
+#     # value_on_open_trade=18.855,
+#     profits=0.38300)
+
+
+while True:
+
+    run_multiple_checks(coins)

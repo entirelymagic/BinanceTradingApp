@@ -24,10 +24,10 @@ class BinanceAccountClient(BClient):
         """
         return self.get_all_tickers()
 
-    def get_market_ticker_price(self, ticker_symbol) -> None or float:
+    def get_market_ticker_price(self, ticker_symbol: str = 'IOTAUSDT') -> None or float:
         """
         Get ticker price of a specific coin
-        @:param ticker_symbol
+        @:param ticker_symbol - default symbol IOTAUSDT
         @:type str
         """
         for ticker in self.get_symbol_ticker():
