@@ -7,7 +7,6 @@ import datetime
 
 from pprint import pprint
 from playsound import playsound
-from static.sounds import *
 
 from BinanceTradingApp.trading_client import BinanceAccountClient
 from get_stochasticRSI import ThreadedCryptoStats
@@ -85,16 +84,15 @@ binance_account = set_acc()
 
 tickers = binance_account.get_all_tickers()
 
-
 # start_monitor_threads(binance_account, ThreadedCryptoStats, "IOTAUSDT")
 
 
 coins = ['OMG', 'FTM', 'NEAR', 'XLM', 'COTI', 'IOTA', 'RVN', 'HOT', 'CHZ', 'BTC', 'DEGO', 'VET', 'ADA', 'BNB', 'ONE']
 
 
-def run_multiple_checks(coins: list = coins):
-    intervals_to_check = ['1m']
-    for item in coins:
+def run_multiple_checks(crypto_coin_list: list):
+    intervals_to_check = ['1m', '15m', '1h']
+    for item in crypto_coin_list:
         for i in intervals_to_check:
             detail = CryptoMonitorThread(binance_account, symbol=item + 'USDT', KLINE_INTERVAL=i)
             detail.return_score()
@@ -104,12 +102,12 @@ def run_multiple_checks(coins: list = coins):
 
 def run_single_values(
         single_coin_check: str,
+        profits: float,
+        value_on_open_trade: float,
         buy_signal: bool = None,
         sell_signal: bool = None,
-        value_on_open_trade: float = 0,
-        profits: float = 0
-        ) -> None:
-
+        KLINE_INTERVAL: str = '1m'
+) -> None:
     # shot statistics on start for 1 hour then Close
     single_coin = CryptoMonitorThread(binance_account, symbol=single_coin_check + 'USDT', KLINE_INTERVAL='1h')
     # set this on if trade opened already
@@ -117,12 +115,13 @@ def run_single_values(
     single_coin.buy_trade = buy_signal
     single_coin.sell_trade = sell_signal
     single_coin.value_on_open_trade = value_on_open_trade
+
     single_coin.return_score()
     single_coin.return_score()
     del single_coin
 
     # shot statistics on start for 1m in a loop
-    single_coin = CryptoMonitorThread(binance_account, symbol=single_coin_check + 'USDT', KLINE_INTERVAL='1m')
+    single_coin = CryptoMonitorThread(binance_account, symbol=single_coin_check + 'USDT', KLINE_INTERVAL=KLINE_INTERVAL)
 
     # set this on if trade opened already
     single_coin.profits = profits
@@ -135,13 +134,13 @@ def run_single_values(
 
 
 # run_single_values(
-#     single_coin_check='DEGO',
-#     # buy_signal=False,
-#     # sell_signal=True,
-#     # value_on_open_trade=18.855,
-#     profits=0.38300)
-
+#     single_coin_check='XLM',
+#     buy_signal=None,
+#     sell_signal=None,
+#     value_on_open_trade=0,
+#     profits=0,
+#     KLINE_INTERVAL='1m')
 
 while True:
-
     run_multiple_checks(coins)
+

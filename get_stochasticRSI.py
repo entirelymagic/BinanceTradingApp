@@ -63,6 +63,7 @@ class ThreadedCryptoStats(threading.Thread):
         self.macd = None
         self.macdsignal = None
         self.macdhist = None
+        self.macd_percents = None
 
         self.rsi_K = None
         self.rsi_D = None
@@ -105,7 +106,7 @@ class ThreadedCryptoStats(threading.Thread):
 
             #################################### End of Main #############################################
             # WARNING: If Logging is removed uncomment the next line.
-            time.sleep(1)  # Sleep for 1 second. So IP is not rate limited.
+            time.sleep(2)  # Sleep for 1 second. So IP is not rate limited.
             # Can be faster. Up to 1200 requests per minute.
 
             self.newest_candle_start = df.timestart.astype(str).iloc[-1]  # gets last time
@@ -137,13 +138,13 @@ class ThreadedCryptoStats(threading.Thread):
             self.rsi_direction_minus_rsi_difference = str(float(self.moving_direction) - float(self.rsi_difference))
 
 
-
             try:
                 self.bbp_direction = str(float(self.bb_percent[-1]) - (float(self.bb_percent[-20])))
 
             except IndexError:
                 pass
 
+            self.macd_percents = float(self.newest_candle_close) * 0.0005
             # aDX
             # self.ADX = talib.ADX(self.newest_high, self.newest_low, self.newest_candle_close)
 

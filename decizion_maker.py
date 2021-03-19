@@ -1,8 +1,12 @@
 import time
 import threading
 import ctypes
-from playsound import playsound
+
+from static.sounds.alert_sounds import play_buy_or_sell_sound, play_strong_signals
+
 from get_stochasticRSI import ThreadedCryptoStats
+
+buy_or_sell_sound = "static/sound/changing_sound.mp3"
 
 
 class CalculateCryptoScore:
@@ -96,9 +100,9 @@ class CryptoMonitorThread(ThreadedCryptoStats):
                             self.value_on_open_trade = float(self.newest_candle_close)
                             self.buy_trade = True
                             self.sell_trade = False
-                            playsound('changing_sound.mp3')
+                            # play_buy_or_sell_sound()
                         elif not self.buy_trade:
-                            playsound('changing_sound.mp3')
+                            # play_buy_or_sell_sound()
                             self.buy_trade = True
                             self.sell_trade = False
                             self.profits += self.value_on_open_trade - float(
@@ -114,21 +118,22 @@ class CryptoMonitorThread(ThreadedCryptoStats):
                         # playsound()
                         if self.value_on_open_trade == 0:
                             self.value_on_open_trade = float(self.newest_candle_close)
-                            playsound('changing_sound.mp3')
+                            # play_buy_or_sell_sound()
                             self.buy_trade = False
                             self.sell_trade = True
                         elif not self.sell_trade:
-                            playsound('changing_sound.mp3')
+                            # play_buy_or_sell_sound()
                             self.buy_trade = False
                             self.sell_trade = True
+
                             self.profits += float(
                                 self.newest_candle_close) - self.value_on_open_trade - self.fee_for_trade
                             self.value_on_open_trade = float(self.newest_candle_close)
 
                 else:
                     #  Stop trade if direction is changing.
-                    if (self.open_trade == 1 and self.sell_trade == 1 and float(self.macdhist) > 0
-                            or self.open_trade == 1 and self.buy_trade == 1 and float(self.macdhist) < 0):
+                    if (self.open_trade == 1 and self.sell_trade and float(self.macdhist) > 0
+                            or self.open_trade == 1 and self.buy_trade and float(self.macdhist) < 0):
                         self.open_trade = 0
 
                 # check if oversold or overbought
@@ -136,14 +141,14 @@ class CryptoMonitorThread(ThreadedCryptoStats):
             except TypeError:
                 pass
             try:
-                if self.buy_signal and float(self.macdhist) < -0.005:
+                if self.buy_signal and float(self.macdsignal) < -self.macd_percents:
                     self.strong_buy = True
                     self.strong_sell = False
-                    playsound("mixkit-epic-orchestra-transition-2290.wav")
-                elif self.sell_signal and float(self.macdhist) > 0.005:
+                    play_strong_signals()
+                elif self.sell_signal and float(self.macdsignal) > self.macd_percents:
                     self.strong_sell = True
                     self.strong_buy = False
-                    playsound("mixkit-epic-orchestra-transition-2290.wav")
+                    play_strong_signals()
                 else:
                     self.strong_sell = None
                     self.strong_buy = None
@@ -159,8 +164,8 @@ class CryptoMonitorThread(ThreadedCryptoStats):
                     print(
                         f"""
                         ********************************************************************
-                        
-                            Crypto Checked =  {self.symbol} On {self.KLINE_INTERVAL} interval.
+                            {'*'*30 if self.buy_signal or self.buy_signal else ''}
+                            Crypto Checked =  {self.symbol}, interval: {self.KLINE_INTERVAL} .
                             Profits = {self.profits}
                             Current_price = {self.newest_candle_close}
                             value_on_open_trade = {self.value_on_open_trade}
@@ -178,6 +183,7 @@ class CryptoMonitorThread(ThreadedCryptoStats):
                             macd {self.macd}
                             macdsignal: {self.macdsignal}
                             macdhist: {self.macdhist}
+                            percent_macd {self.macd_percents}
 
                             newest_candle_K {self.newest_candle_K}
                             newest_candle_D {self.newest_candle_D}
