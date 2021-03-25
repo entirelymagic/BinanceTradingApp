@@ -1,12 +1,31 @@
 import time
-import threading
-import ctypes
-
+import logging
+from datetime import datetime
 from static.sounds.alert_sounds import play_buy_or_sell_sound, play_strong_signals
 
 from get_stochasticRSI import ThreadedCryptoStats
 
 buy_or_sell_sound = "static/sound/changing_sound.mp3"
+
+
+# Logger setup
+def setup_logger(logger_name, log_file, level=logging.DEBUG):
+    l = logging.getLogger(logger_name)
+    formatter =logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fileHandler = logging.FileHandler(log_file, mode='a+')
+    fileHandler.setFormatter(formatter)
+    streamHandler = logging.StreamHandler()
+    streamHandler.setFormatter(formatter)
+
+    l.setLevel(level)
+    l.addHandler(fileHandler)
+    l.addHandler(streamHandler)
+
+
+setup_logger('long_log', 'long_log'+".txt", level=logging.DEBUG)
+setup_logger('short_log', 'short_log'+".txt", level=logging.DEBUG)
+long_log = logging.getLogger('long_log')
+short_log = logging.getLogger('short_log')
 
 
 class CalculateCryptoScore:
@@ -15,7 +34,7 @@ class CalculateCryptoScore:
         self.ct = threaded_crypto
 
 
-def start_monitor_threads(binance_account, ThreadedCryptoStats, symbols: str = 'IOTAUSDT'):
+def start_monitor_threads(binance_account, symbols: str = 'IOTAUSDT'):
     """Start threads for symbols. on a specific account"""
 
     crypto_12h = ThreadedCryptoStats(binance_account, symbol=symbols, KLINE_INTERVAL='12h')
@@ -63,13 +82,12 @@ class CryptoMonitorThread(ThreadedCryptoStats):
         self.value_on_open_trade = 0
         self.fee_for_trade = 0
         self.potential_profit_so_far = 0
+        self.sleep_time = 5
+
+        self.strong_signals = []
 
     def return_score(self):
-        """Every 10 seconds check if :
-            - STOCHASTIC RSI is showing sell or buy.
-            - MACD is showing sell or buy
-
-        If both show sell or buy, then it a buy or sell signal should be available.
+        """Develop a decision to sell or buy made on available information.
         """
         if True:
             try:
@@ -142,6 +160,7 @@ class CryptoMonitorThread(ThreadedCryptoStats):
                 pass
             try:
                 if self.buy_signal and float(self.macdsignal) < -self.macd_percents:
+
                     self.strong_buy = True
                     self.strong_sell = False
                     play_strong_signals()
@@ -161,24 +180,34 @@ class CryptoMonitorThread(ThreadedCryptoStats):
                             (float(self.newest_candle_close) - self.value_on_open_trade if self.buy_signal else
                              self.value_on_open_trade - float(self.newest_candle_close) if self.sell_signal else 0)
                             - self.fee_for_trade)
-                    print(
+
+                    long_log.info(
                         f"""
+                        Current Time: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
                         ********************************************************************
-                            {'*'*30 if self.buy_signal or self.buy_signal else ''}
+                            {'*'*68 if self.buy_signal or self.buy_signal else ''}
                             Crypto Checked =  {self.symbol}, interval: {self.KLINE_INTERVAL} .
                             Profits = {self.profits}
                             Current_price = {self.newest_candle_close}
+                            Last Candle Close Price = {self.last_candle_close}
                             value_on_open_trade = {self.value_on_open_trade}
-                            potential_profit_so_far = {self.potential_profit_so_far}
-
-                            Strong trade = {"Strong Sell" if self.strong_sell else "Strong Buy" if self.strong_buy else None}
-                            self.buy_signal = {self.buy_signal}
-                            self.sell_signal = {self.sell_signal}
+                            Potential profits = {self.potential_profit_so_far}
+                            
+                            ---------------------------------------------------------------------
+                            Trade Signal = {
+                                            "Strong Sell " if self.strong_sell else 
+                                            "Strong Buy" if self.strong_buy else 
+                                            'BUY SIGNAL' if self.buy_signal else 
+                                            'SELL SIGNAL' if self.sell_signal else
+                                            '---'
+                            }
+                            ---------------------------------------------------------------------
+                            
                             self.open_trade = {self.open_trade}
 
                             self.rsi_bullish = {self.rsi_bullish}
                             self.stc_bullish = {self.stc_bullish}
-                            bb_percent = {self.newest_bb_percent}
+                            bb_percent = {float(self.newest_bb_percent)}
 
                             macd {self.macd}
                             macdsignal: {self.macdsignal}
@@ -192,10 +221,28 @@ class CryptoMonitorThread(ThreadedCryptoStats):
                             MESA Adaptive Moving Average = {
                         "Bullish" if float(self.mama) - float(self.fama) > 0 else "Bearish"
                         }
+                            {self.mama} { self.fama}
 
+                            """)
+                    if self.strong_sell or self.strong_buy:
+                        short_log.info(
+                            f"""
+                            Current Time: {datetime.now().strftime("%d/%m/%Y %H:%M:%S")}
+                            Crypto Checked =  {self.symbol}, interval: {self.KLINE_INTERVAL} .
+                            Price = {self.newest_candle_close}
+                            ---------------------------------------------------------------------
+                            Trade Signal = {
+                                            "Strong Sell " if self.strong_sell else 
+                                            "Strong Buy" if self.strong_buy else 
+                                            'BUY SIGNAL' if self.buy_signal else 
+                                            'SELL SIGNAL' if self.sell_signal else
+                                            '---'
+                            }
+                            ---------------------------------------------------------------------
                             """)
 
             except TypeError:
                 pass
 
-            time.sleep(5)
+            time.sleep(self.sleep_time)
+

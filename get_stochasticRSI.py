@@ -64,10 +64,10 @@ class ThreadedCryptoStats(threading.Thread):
         self.macdsignal = None
         self.macdhist = None
         self.macd_percents = None
+        self.last_candle_close = None
 
         self.rsi_K = None
         self.rsi_D = None
-
 
     # StochasticRSI Function
     @staticmethod
@@ -101,7 +101,7 @@ class ThreadedCryptoStats(threading.Thread):
             df['rsi'] = rsi
 
             # Compute StochRSI using RSI values in Stochastic function
-            self.my_stoch_rsi = self._stochasticRSI(df.rsi, df.rsi, df.rsi, 3, 3, 120)
+            self.my_stoch_rsi = self._stochasticRSI(df.rsi, df.rsi, df.rsi, 3, 3, 320)
             df['MyStochrsiK'], df['MyStochrsiD'] = self.my_stoch_rsi
 
             #################################### End of Main #############################################
@@ -117,6 +117,9 @@ class ThreadedCryptoStats(threading.Thread):
             self.newest_candle_D = df.MyStochrsiD.astype(str).iloc[-1]  # gets last rsi
             self.newest_high = df.high.astype(str).iloc[-1]
             self.newest_low = df.low.astype(str).iloc[-1]
+
+            self.last_candle_close = df.close.iloc[-2]  # gets second last
+
             # get moving_Direction
             self.moving_direction = str(
                 float(df.MyStochrsiK.astype(str).iloc[-1]) - float(df.MyStochrsiD.astype(str).iloc[-1]))
@@ -130,9 +133,11 @@ class ThreadedCryptoStats(threading.Thread):
             self.newest_bb_upper_band = bbands[0][-1]
             self.newest_bb_middle_band = bbands[1][-1]
             self.newest_bb_lower_band = bbands[2][-1]
-            self.newest_bb_percent = str((float(self.newest_candle_close) - float(self.newest_bb_lower_band)) /
-                                         (float(self.newest_bb_upper_band) - float(self.newest_bb_lower_band))
-                                         )
+            self.newest_bb_percent = str(
+                        ((float(self.newest_candle_close) - float(self.newest_bb_lower_band)) /
+                        (float(self.newest_bb_upper_band) - float(self.newest_bb_lower_band))
+                         )*100
+            )
             self.bb_percent.append(self.newest_bb_percent)
 
             self.rsi_direction_minus_rsi_difference = str(float(self.moving_direction) - float(self.rsi_difference))
@@ -144,7 +149,7 @@ class ThreadedCryptoStats(threading.Thread):
             except IndexError:
                 pass
 
-            self.macd_percents = float(self.newest_candle_close) * 0.0005
+            self.macd_percents = float(self.newest_candle_close) * 0.005
             # aDX
             # self.ADX = talib.ADX(self.newest_high, self.newest_low, self.newest_candle_close)
 

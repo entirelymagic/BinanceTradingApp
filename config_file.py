@@ -1,16 +1,14 @@
 import configparser
 import os
-import time
-import sys
 import logging
-import datetime
-
+import time
+import random
 from pprint import pprint
-from playsound import playsound
+
 
 from BinanceTradingApp.trading_client import BinanceAccountClient
-from get_stochasticRSI import ThreadedCryptoStats
-from decizion_maker import CalculateCryptoScore, start_monitor_threads, CryptoMonitorThread
+from decizion_maker import CryptoMonitorThread
+
 
 # Config consts
 CFG_FL_NAME = 'data/user.cfg'
@@ -34,15 +32,6 @@ with open('data/supported_coin_list') as f:
 TELEGRAM_CHAT_ID = config.get(USER_CFG_SECTION, 'botChatID')
 TELEGRAM_TOKEN = config.get(USER_CFG_SECTION, 'botToken')
 BRIDGE = config.get(USER_CFG_SECTION, 'bridge')
-
-# Logger setup
-logger = logging.getLogger('crypto_trader_logger')
-logger.setLevel(logging.DEBUG)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-fh = logging.FileHandler('crypto_trading.log')
-fh.setLevel(logging.DEBUG)
-fh.setFormatter(formatter)
-logger.addHandler(fh)
 
 
 def set_acc() -> 'BinanceAccountClient':
@@ -84,20 +73,21 @@ binance_account = set_acc()
 
 tickers = binance_account.get_all_tickers()
 
-# start_monitor_threads(binance_account, ThreadedCryptoStats, "IOTAUSDT")
+# start_monitor_threads(binance_account, "IOTAUSDT")
 
 
-coins = ['OMG', 'FTM', 'NEAR', 'XLM', 'COTI', 'IOTA', 'RVN', 'HOT', 'CHZ', 'BTC', 'DEGO', 'VET', 'ADA', 'BNB', 'ONE']
+coins = ['THETA', 'FTM', 'NEAR', 'XLM', 'COTI', 'IOTA', 'RVN', 'HOT', 'CHZ', 'BTC', 'DEGO', 'VET', 'ADA', 'BNB', 'ONE']
 
 
 def run_multiple_checks(crypto_coin_list: list):
-    intervals_to_check = ['1m', '15m', '1h']
+    intervals_to_check = ['1m', '15m']  #
     for item in crypto_coin_list:
         for i in intervals_to_check:
             detail = CryptoMonitorThread(binance_account, symbol=item + 'USDT', KLINE_INTERVAL=i)
             detail.return_score()
             detail.return_score()
             del detail
+            time.sleep(5)
 
 
 def run_single_values(
@@ -128,19 +118,32 @@ def run_single_values(
     single_coin.buy_signal = buy_signal
     single_coin.sell_signal = sell_signal
     single_coin.value_on_open_trade = value_on_open_trade
+    single_coin.sleep_time = 5
     # Check continuously
     while True:
         single_coin.return_score()
 
 
-# run_single_values(
-#     single_coin_check='XLM',
-#     buy_signal=None,
-#     sell_signal=None,
-#     value_on_open_trade=0,
-#     profits=0,
-#     KLINE_INTERVAL='1m')
+# orders = binance_account.get_all_orders(symbol="CHZUSDT")
+# pprint(orders)
 
-while True:
-    run_multiple_checks(coins)
+run_single_values(
+    single_coin_check='BTC',  # NEAR, OMG
+    buy_signal=None,
+    sell_signal=None,
+    value_on_open_trade=0,  # 5.4153,  5.4557
+    profits=0,
+    KLINE_INTERVAL='15m')
+
+
+# other_coins = ['NEAR', 'OMG']
+
+
+# random.shuffle(coins)
+# while True:
+#     run_multiple_checks(coins)  # coins
+
+
+
+
 
