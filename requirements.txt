@@ -46,7 +46,7 @@ Twisted==20.3.0
 txaio==21.2.1
 tzlocal==2.1
 ujson==4.0.2
-urllib3==1.26.3
+urllib3==1.26.5
 vine==5.0.0
 wcwidth==0.2.5
 websocket-client==0.57.0
