@@ -17,7 +17,7 @@ constantly==15.1.0
 cryptography==3.4.6
 daphne==3.0.1
 dateparser==1.0.0
-Django==3.1.7
+Django==3.1.13
 hyperlink==21.0.0
 idna==2.10
 incremental==17.5.0
